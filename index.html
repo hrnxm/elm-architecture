@@ -1,20 +1,906 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elm Example</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>Elm Architecture</title>
+
+	<link rel="stylesheet" href="dist/reset.css">
+	<link rel="stylesheet" href="dist/reveal.css">
+	<link rel="stylesheet" href="dist/theme/black.css">
+	<link rel="stylesheet" href="dist/style.css">
+
+	<!-- Theme used for syntax highlighted code -->
+	<link rel="stylesheet" href="plugin/highlight/materia.min.css">
 </head>
 
 <body>
-    <p>-- Other nodes --</p>
-    <div id="elm"></div>
-    <p>-----------------</p>
+	<div class="reveal">
+		<div class="slides">
+			<section>
+				<svg class="elm-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650 650">
+					<path fill="rgba(255,255,255,0)" d="M0 0h600v600H0z" />
+					<path fill="#1293d8"
+						d="M20 599l280-280 280 280H20zM0 19l280 280L0 579V19zM320-1h280v280L320-1zm0 300l130 130 130-130-130-130-130 130zM20-1h260l122 122H142L20-1zm410 150L300 279 170 149h260zm170 430L470 449l130-130v260z" />
+				</svg>
+				<p class="title"><span class="elm-color">elm</span> architecture </p>
+			</section>
+
+			<section>
+
+				<section>
+					<h2>Modules</h2>
+				</section>
+
+				<section>
+					<ul>
+						<li>Way to organize files</li>
+						<li>Each file begins with <span class="elm-color">module</span> keyword</li>
+						<li>Name has to contain full path from root, separated with a dot</li>
+						<img class="center" src="images/files.png">
+						<pre class="elm fragment fade-up"><code data-trim>
+							module Main exposing (..)
+						</code></pre>
+						<pre class="elm fragment fade-up"><code data-trim>
+							module DataModels.Color exposing (..)
+						</code></pre>
+					</ul>
+				</section>
+
+				<section>
+					You can expose everything or only selected functions and types
+					<pre class="elm fragment fade-up"><code data-trim>
+						-- exposing everything
+						exposing (..)
+					</code></pre>
+					<pre class="elm fragment fade-up"><code data-trim>
+						-- exposing certain functions
+						exposing (init, encode, decoder)
+					</code></pre>
+					<pre class="elm fragment fade-up"><code data-trim>
+						-- exposing union type
+						exposing (Color)
+
+						-- exposing union type AND type values
+						exposing (Color(..))
+					</code></pre>
+				</section>
+
+				<section>
+					<h2>Importing</h2>
+
+					<pre class="elm"><code data-trim>
+						import DataModels.Color
+						
+						> DataModels.Color.Blue
+					</code></pre>
+
+					<pre class="elm fragment fade-up"><code data-trim>
+						import DataModels.Color exposing (..)
+						
+						> Blue
+					</code></pre>
+
+					<pre class="elm fragment fade-up"><code data-trim>
+						import DataModels.Color exposing (init, toString)
+
+						> Blue -- not found
+					</code></pre>
+
+					<pre class="elm fragment fade-up"><code data-trim>
+						import DataModels.Color as Color
+
+						> Color.Blue
+					</code></pre>
+				</section>
+
+				<section>
+					Common pattern
+
+					<pre class="elm"><code data-trim>
+						import DataModels.Color as Color exposing (Color, colorDecoder)
+
+						> giveMeRed : Color
+						  giveMeRed =
+						  	Color.Red
+
+						> Color.init
+
+						> Color.toString
+
+						> colorDecoder
+					</code></pre>
+				</section>
+
+			</section>
+
+			<section>
+
+				<section>
+					<h3>Commands</h3>
+					<p>and</p>
+					<h3>Subscriptions</h3>
+				</section>
+
+				<section>
+					<p> Communication with the outside world </p>
+					<object data="images/elm.svg" width="400"> </object>
+					<p class="fragment fade-up">
+						Side effects? 👎<br>
+						Managed effects. 👍
+					</p>
+					<p class="fragment fade-up">
+						<span class="elm-color">Cmd</span> and <span class="elm-color">Sub</span> modules have functions
+						that work nicely with them
+					</p>
+				</section>
+
+			</section>
+
+			<section>
+
+				<section>
+					<h2>Main</h2>
+				</section>
+
+				<section>
+					<div class="align-left" style="margin-bottom: 30px;">
+						There are several ways to initialize your elm app
+						Module <span class="elm-color">Browser</span> exposes the following functions:
+					</div>
+
+					<ul class="arrows">
+						<li>
+							<span class="elm-color">sandbox</span> - no effects, only for
+							learning
+						</li>
+						<li>
+							<span class="elm-color">element</span> - effects, your app is a node
+							in DOM
+						</li>
+						<li>
+							<span class="elm-color">document</span> - also manages page title
+						</li>
+						<li>
+							<span class="elm-color">application</span> - also manages URL changes
+						</li>
+					</ul>
+				</section>
+
+				<section>
+					The whole program is described with a <span class="elm-color">Program</span> type, parameterized
+					with types of your choosing
+
+					<pre class="elm"><code data-trim>
+						Program flags model msg
+					</code></pre>
+
+					<ul>
+						<li class="fragment fade-up"><span class="elm-color">flags</span> - type of input parameters,
+							there is a way to ignore
+							them</li>
+						<li class="fragment fade-up"><span class="elm-color">model</span> - type of your main model,
+							usually a record</li>
+						<li class="fragment fade-up"><span class="elm-color">msg</span> - type of the events that can
+							flow through the program,
+							usually a union type</li>
+					</ul>
+				</section>
+
+				<section>
+					<p>Example with an <span class="elm-color">element</span></p>
+					<pre class="elm"><code data-trim>
+						{ init 			: flags -> ( model, Cmd msg )
+						, view 			: model -> Html msg
+						, update        : msg 	-> model -> ( model, Cmd msg )
+						, subscriptions : model -> Sub msg
+						}
+					</code></pre>
+					<pre class="elm fragment fade-up"><code data-trim>
+						{ init = init
+						, view = view
+						, update = update
+						, subscriptions = subscriptions
+						}
+					</code></pre>
+				</section>
+
+			</section>
+
+			<section>
+				<section>
+					<h2>init</h2>
+					<pre class="elm"><code data-trim>
+					init : flags -> ( model, Cmd msg )
+					</code></pre>
+				</section>
+
+				<section>
+					<pre class="elm"><code data-trim data-line-numbers="1|3-7|9-10|11-14|15|9,15">
+						type alias InputParams = { currentTime : String }
+	
+						type alias Model = 
+							{ timeOfInitialization : String
+							, messages : List String
+							, typedValue : String
+							}
+	
+						init : InputParams -> ( Model, Cmd msg )
+						init inputParams =
+							( { timeOfInitialization = inputParams.currentTime
+							  , messages = []
+							  , typedValue = ""
+							  }
+							, Cmd.none
+							)
+					</code></pre>
+				</section>
+
+				<section>
+					<p>Initializing program without flags?</p>
+					<span class="elm-color">Unit</span> type.
+					<pre class="elm"><code data-trim>
+						Program () Model Msg
+						...
+						init : () -> ( Model, Cmd msg )
+						init _ =
+							...
+					</code></pre>
+				</section>
+
+			</section>
+
+			<section>
+
+				<section>
+					<h2>view</h2>
+					<pre class="elm"><code data-trim>
+						view : model -> Html msg
+					</code></pre>
+				</section>
+
+				<section>
+					<pre class="elm"><code data-trim>
+					import Html exposing (Html)
+					...
+					view : model -> Html msg
+				</code></pre>
+					<p class="fragment fade-up align-left">Elm manages its own Virtual DOM</p>
+					<p class="fragment fade-up align-left"><span class="elm-color">Html</span> and <span
+							class="elm-color">Html.Attributes</span> modules have a function for every HTML element /
+						attribute</p>
+				</section>
+
+				<section class="fit-code">
+					<pre class="html"><code data-trim data-line-numbers="1,7|2,6|3-5|1-7">
+						<div id="main" class="blue">
+							<p class="red">
+								This is some
+								<span class="purple-text">serious</span>
+								stuff
+							</p>
+						</div>
+					</code></pre>
+					<pre class="elm fragment fade-up"><code data-trim data-line-numbers="1-2|6,7,15|8,9,14|10-13|1-15">
+						import Html exposing (Html)
+						import Html.Attributes as Attr
+						...
+						view : Model -> Html msg
+						view model =
+							Html.div [ Attr.id "main", Attr.class "blue" ]
+							[ 
+								Html.p [ Attr.class "red" ]
+								[ 
+								  Html.text "This is some"
+								, Html.span [ Attr.class "purple-text" ]
+									[ Html.text "serious" ]
+								, Html.text "stuff"
+								]
+							]
+					</code></pre>
+				</section>
+
+				<section>
+					<pre class="html"><code data-trim>
+						<div>
+							<input type="text" oninput="handleInput(this.value)">
+							<button onclick="handleClick()"> Send </button>
+						</div>
+					</code></pre>
+					<pre class="elm fragment fade-up"><code data-trim data-line-numbers="1|3|5-10">
+						import Html.Events exposing (onInput, onClick)
+						...
+						type Msg = Input String | Click
+						...
+						view : Model -> Html Msg
+						view model =
+							div []
+								[ input [ type_ "text", onInput Input ] []
+								, button [ onClick Click ] []
+								]
+					</code></pre>
+					<pre class="elm fragment fade-up"><code data-trim>
+						onInput : (String -> msg) -> Attribute msg
+					</code></pre>
+					<pre class="elm fragment fade-up"><code data-trim>
+						> Input : (String -> Msg)
+					</code></pre>
+				</section>
+
+			</section>
+
+			<section>
+
+				<section>
+					<h2>update</h2>
+					<pre class="elm"><code data-trim>
+						update : msg -> model -> ( model, Cmd msg )
+					</code></pre>
+				</section>
+
+				<section>
+					<pre class="elm"><code data-trim data-line-numbers="1-3|4-7|9-10">
+						update : Msg -> Model -> ( Model, Cmd Msg )
+						update msg model =
+							case msg of
+								Input str ->
+									( { model | typedValue = str }
+									, Cmd.none
+									)
+
+								Click ->
+									( model, WebSocket.sendMessage model.typedValue )
+					</code></pre>
+
+					<pre class="elm fragment fade-up"><code data-trim>
+						-- For multiple commands
+						Cmd.batch [ cmd1, cmd2 ]
+					</code></pre>
+				</section>
+
+				<section>
+					State management
+					<pre class="elm fragment fade-up"><code data-trim data-line-numbers="6">
+					view model =
+						...
+						input 
+							[ type_ "text"
+							, onInput Input
+							, value model.typedValue
+							]
+							[]
+					</code></pre>
+					<pre class="elm fragment fade-up"><code data-trim data-line-numbers="4">
+					update msg model =
+						...
+						Click ->
+							( { model | typedValue = "" }
+							, WebSocket.sendMessage model.typedValue
+							)
+					</code></pre>
+
+				</section>
+
+			</section>
+
+			<section>
+
+				<section>
+					<h2>subscriptions</h2>
+					<pre class="elm"><code data-trim>
+						subscriptions : model -> Sub msg
+					</code></pre>
+				</section>
+
+				<section>
+					<pre class="elm"><code data-trim>
+						type Msg =
+							...
+							| MessageReceived String
+
+						subscriptions : Model -> Sub Msg
+						subscriptions model =
+							Sub.batch
+								[ WebSocket.onMessage MessageReceived
+								]
+					</code></pre>
+
+					<pre class="elm fragment fade-up"><code data-trim>
+						onMessage : (String -> msg) -> Sub msg
+					</code></pre>
+				</section>
+
+				<section>
+					<pre class="elm"><code data-trim>
+						-- Error: 
+						-- This `case` does not have branches for all possibilities
+						--
+						-- Missing possibilities include:
+						-- `MessageReceived`
+					</code></pre>
+
+					<pre class="elm fragment fade-up"><code data-trim>
+						update msg model =
+							...
+							MessageReceived message ->
+								( { model | messages = message :: model.messages
+								  }
+								, Cmd.none
+								)
+					</code></pre>
+				</section>
+
+				<section>
+					<pre class="elm"><code data-trim>
+						(::) -- "cons" operator
+						-- adds to the beginning of the list
+						-- can be used for pattern matching
+					</code></pre>
+
+					<pre class="elm fragment fade-up"><code data-trim>
+						sum : List number -> number
+						sum list =
+							case list of
+								[] ->
+									0
+								head :: rest ->
+									head + sum rest
+					</code></pre>
+
+					<pre class="elm fragment fade-up"><code data-trim>
+						length : List a -> a
+						length list =
+							case list of
+								[] ->
+									0
+								_ :: rest ->
+									1 + length rest
+					</code></pre>
+				</section>
+
+				<section>
+					<pre class="elm"><code data-trim data-line-numbers="3,4,14">
+						view model =
+							let
+								viewMessage message =
+									li [] [ text message ]
+							in
+							div []
+								[ input
+									[ type_ "text"
+									, onInput Input
+									, value model.typedValue
+									]
+									[]
+								, button [ onClick Click ] [ text "Send" ]
+								, ul [] <| List.map viewMessage model.messages
+								]
+					</code></pre>
+				</section>
+
+			</section>
+
+			<section>
+
+				<section>
+					<h2>Compiling</h2>
+				</section>
+
+				<section>
+					Generate <span class="js-color">JavaScript</span> file
+					<pre class="bash"><code data-trim>
+						$ elm make src/elm/Main.elm --output=build/elm.js
+					</code></pre>
+					Create a custom HTML file
+					<pre class="html"><code data-trim>
+						&ltbody&gt
+							<div id="elm"></div>
+						&lt/body&gt
+						&ltscript src="build/elm.js"&gt&lt/script&gt
+					</code></pre>
+				</section>
+
+				<section>
+					Embed your elm program
+					<pre class="html"><code data-trim>
+						&ltscript&gt
+							Elm.Main.init({
+								node: document.querySelector('#elm'),
+								flags: {
+									currentTime: new Date().toLocaleTimeString()
+								}
+							});
+						&lt/script&gt
+					</code></pre>
+					<div class="fragment fade-up">Add additional HTML elements, JS/CSS code as you wish...</div>
+				</section>
+
+			</section>
+
+			<section>
+
+				<section>
+					<h2>Ports</h2>
+				</section>
+
+				<section>
+					Ports allow communication between <span class="elm-color">Elm</span> and <span
+						class="js-color">JavaScript</span>
+
+					<pre class="elm fragment fade-up"><code data-trim>
+						-- Module has to be declared as port
+						port module WebSocket exposing (..)
+					</code></pre>
+
+					<div class="fragment fade-up">They are functions that have no definition</div>
+
+					<pre class="elm fragment fade-up"><code data-trim>
+						-- elm -> js
+						port sendMessage : String -> Cmd msg
+
+						-- js -> elm
+						port onMessage : (String -> msg) -> Sub msg
+					</code></pre>
+				</section>
+
+				<section>
+					To handle them in JS
+
+					<pre class="javascript"><code data-trim>
+						const app = Elm.Main.init();
+
+						// elm -> js
+						app.ports.sendMessage.subscribe((message) => {
+							ws.send(message);
+						});
+
+						// js -> elm
+						app.ports.onMessage.send(message);
+					</code></pre>
+				</section>
+
+			</section>
+
+			<section>
+				<img src="images/architecture.svg">
+			</section>
+
+			<section>
+
+				<section>
+					<h2>Tasks</h2>
+				</section>
+
+				<section>
+					They describe asynchronous operations that may fail, like HTTP requests or DOM manipulations
+				</section>
+
+				<section>
+					Example with fetching time
+
+					<pre class="elm"><code data-trim>
+						import Time  -- elm install elm/time
+						import Task
+
+						type Msg
+							= Click
+							| NewTime Time.Posix
+
+						getNewTime : Cmd Msg
+						getNewTime =
+							Task.perform NewTime Time.now
+					</code></pre>
+				</section>
+
+				<section>
+					Example with scroll
+
+					<pre class="elm"><code data-trim>
+						import Browser.Dom as Dom
+						import Task
+
+						type Msg
+							= NoOp
+
+						jumpToBottom : String -> Cmd Msg
+						jumpToBottom id =
+							Dom.getViewportOf id
+								|> Task.andThen (\info -> Dom.setViewportOf id 0 info.scene.height)
+								|> Task.attempt (\_ -> NoOp)
+					</code></pre>
+				</section>
+
+			</section>
+
+			<section>
+
+				<section>
+					<h3>Encoders</h3>
+					<p>and</p>
+					<h3>Decoders</h3>
+				</section>
+
+				<section>
+					Package <span class="elm-color">Json.Encode</span> helps to convert Elm values into <span
+						class="elm-color">Value</span> which represents a JavaScript value, or into a JSON string.
+					<div class="fragment fade-up"><span class="elm-color">Json.Encode.Value</span> can be sent through
+						ports to JS.</div>
+					<pre class="elm fragment fade-up"><code data-trim>
+						import Json.Encode as JE
+
+						encode : Person -> JE.Value
+						encode person =
+							JE.object
+								[ ( "name", JE.string person.name )
+								, ( "age", JE.int person.age )
+								, ( "height", JE.float person.height )
+								]
+					</code></pre>
+
+				</section>
+
+				<section>
+					Package <span class="elm-color">Json.Decode</span> turns JSON values into Elm values. <br>
+					<div class="fragment fade-up"><span class="elm-color">Json.Decode.Value</span> can be received as a
+						flag or
+						through ports from JS.
+					</div>
+					<pre class="elm fragment fade-up"><code data-trim>
+						module Json.Decode exposing (..)
+
+						import Json.Encode
+
+						type alias Value = Json.Encode.Value
+					</code></pre>
+
+				</section>
+				<section>
+					Package <span class="elm-color">Json.Decode.Pipeline</span> makes it easier to create decoders for
+					objects/records.
+
+					<pre class="elm fragment fade-up"><code data-trim>
+						import Json.Decode as JD
+						import Json.Decode.Pipeline as JDP
+
+						personDecoder : JD.Decoder Person
+						personDecoder =
+							JD.succeed Person
+								|> JDP.required "name" JD.int
+								|> JDP.optional "age" JD.string 20
+								|> JDP.hardcoded 1.8
+					</code></pre>
+				</section>
+
+				<section>
+					Once you create a decoder you can use functions <span class="elm-color">decodeString</span>/<span
+						class="elm-color">decodeValue</span>.<br>
+					Those functions both return a <span class="elm-color">Result</span> type.
+
+					<pre class="elm"><code data-trim>
+						decodeValue : Decoder a -> Value -> Result Error a
+					</code></pre>
+
+					<pre class="elm fragment fade-up"><code data-trim>
+						type Result error value
+							= Ok value
+							| Err error
+					</code></pre>
+				</section>
+
+				<section>
+					<pre class="elm"><code data-trim>
+						res =
+							JD.decodeValue JD.string value
+
+						parseString =
+							case res of
+								Ok value ->
+									value
+								
+								Err error
+									let
+										_ = Debug.log "Error" error
+									in
+									""
+					</code></pre>
+				</section>
+
+			</section>
+
+			<section>
+
+				<section>
+					<h2>Nested modules</h2>
+				</section>
+
+				<section>
+					<pre class="elm"><code data-trim>
+						module Login exposing (..)
+
+						init = ...
+						view = ...
+						update = ...
+						subscriptions = ...
+					</code></pre>
+					<pre class="elm"><code data-trim>
+						module Chat exposing (..)
+
+						init = ...
+						view = ...
+						update = ...
+						subscriptions = ...
+					</code></pre>
+				</section>
+
+				<section>
+					<pre class="elm"><code data-trim>
+						module Main exposing (..)
+
+						import Login
+						import Chat
+
+						type Model 
+							= LoginModel Login.Model
+							| ChatModel Chat.Model
+
+						type Msg
+							= LoginMsg Login.Msg
+							| ChatMsg Chat.Msg
+
+						main =
+							Browser.element ...
+					</code></pre>
+					<pre class="elm fragment fade-up"><code data-trim>
+						> LoginMsg : Login.Msg -> Msg
+					</code></pre>
+				</section>
+
+				<section>
+					<pre class="elm"><code data-trim>
+						init : () -> ( Model, Cmd Msg )
+						init _ =
+							( LoginModel Login.init
+							, Cmd.none	
+							)
+					</code></pre>
+				</section>
+
+				<section>
+					<pre class="elm"><code data-trim>
+					view : Model -> Html Msg
+					view model =
+						case model of
+							LoginModel loginModel ->
+								Login.view loginModel -- Error
+							
+							ChatModel chatModel ->
+								Chat.view chatModel -- Error
+					</code></pre>
+					<pre class="elm fragment fade-up"><code data-trim>
+					> Html Login.Msg -> Html Msg ???
+					</code></pre>
+					<pre class="elm fragment fade-up"><code data-trim>
+					> Html.map : (a -> b) -> Html a -> Html b
+					</code></pre>
+				</section>
+
+				<section>
+					<pre class="elm"><code data-trim>
+					view : Model -> Html Msg
+					view model =
+						case model of
+							LoginModel loginModel ->
+								Login.view loginModel |> Html.map LoginMsg
+							
+							ChatModel chatModel ->
+								Chat.view chatModel |> Html.map ChatMsg
+					</code></pre>
+				</section>
+
+				<section>
+					<pre class="elm"><code data-trim>
+					update : Msg -> Model -> ( Model, Cmd Msg )
+					update msg model =
+						case ( msg, model ) of
+							( LoginMsg loginMsg, LoginModel loginModel ) ->
+								handleLoginMsg loginMsg loginModel
+							
+							( ChatMsg chatMsg, ChatModel chatModel ) ->
+								handleChatMsg chatMsg chatModel
+
+							_ ->
+								( model, Cmd.none )
+					</code></pre>
+				</section>
+
+				<section>
+					<pre class="elm"><code data-trim>
+						handleLoginMsg : Login.Msg -> Login.Model -> ( Model, Cmd Msg )
+						handleLoginMsg loginMsg loginModel =
+							let
+								( updatedLoginModel, loginCmd ) =
+									Login.update loginMsg loginModel
+							in
+							( LoginModel updatedLoginModel
+							, Cmd.map LoginMsg loginCmd
+							)
+						</code></pre>
+					<pre class="elm fragment fade-up"><code data-trim>
+						handleChatMsg : Chat.Msg -> Chat.Model -> ( Model, Cmd Msg )
+						handleChatMsg chatMsg chatModel =
+							let
+								( updatedChatModel, chatCmd ) =
+									Chat.update chatMsg chatModel
+							in
+							( ChatModel updatedChatModel
+							, Cmd.map ChatMsg chatCmd
+							)
+					</code></pre>
+				</section>
+
+				<section>
+					<pre class="elm"><code data-trim>
+					subscriptions : Model -> Sub Msg
+					subscriptions model =
+						case model of
+							LoginModel loginModel ->
+								Login.subscriptions loginModel |> Sub.map LoginMsg
+	
+							ChatModel chatModel ->
+								Chat.subscriptions chatModel |> Sub.map ChatMsg
+					</code></pre>
+
+				</section>
+
+				<section>
+					<span class="elm-color">Exercise:</span> Implement switching between modules <br>
+					(log in / log out)
+				</section>
+
+			</section>
+
+			<section>
+				<section>
+					<h2>Resources</h2>
+				</section>
+
+				<section>
+					<ul class="arrows">
+						<li><a href="https://github.com/hrnxm/elm-architecture/">Examples</a></li>
+						<li><a href="https://ellie-app.com/">Ellie</a></li>
+						<li><a href="https://github.com/halfzebra/create-elm-app">create-elm-app</a></li>
+						<li><a href="https://www.elm-spa.dev/">elm-spa</a></li>
+						<li><a href="https://github.com/rtfeldman/elm-spa-example">elm-spa-example</a></li>
+					</ul>
+				</section>
+
+			</section>
+
+			<section>
+				<h2>Q <span class="elm-color">&</span> A</h2>
+			</section>
+
+		</div>
+	</div>
+
+	<script src="dist/reveal.js"></script>
+	<script src="plugin/notes/notes.js"></script>
+	<script src="plugin/markdown/markdown.js"></script>
+	<script src="plugin/highlight/highlight.js"></script>
+	<script src="plugin/zoom/zoom.js"></script>
+	<script>
+		// More info about initialization & config:
+		// - https://revealjs.com/initialization/
+		// - https://revealjs.com/config/
+		Reveal.initialize({
+			hash: true,
+
+			// Learn about plugins: https://revealjs.com/plugins/
+			plugins: [RevealMarkdown, RevealHighlight, RevealNotes, RevealZoom]
+		});
+	</script>
 </body>
-<script src="build/elm.js"></script>
-<script src="src/js/websocket.js"></script>
-<script src="src/js/app.js"></script>
 
 </html>

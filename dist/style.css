@@ -1,0 +1,75 @@
+pre code {
+    -moz-tab-size: 4 !important;
+    tab-size: 4 !important;
+}
+
+.elm-color {
+    color: #1293d8;
+}
+
+.js-color {
+    color: #f7df1e
+}
+
+ul {
+    list-style-type: none !important;
+}
+
+ul li::before {
+    content: "\2022";
+    color: #1293d8;
+    font-weight: bold;
+    display: inline-block;
+    width: 25px;
+    margin-left: -25;
+}
+
+ul.arrows li::before {
+    color: #1293d8;
+    content: '\279C';
+    margin-left: -20px;
+    margin-right: 10px;
+    font-weight: unset;
+    display: unset;
+    width: unset;
+}
+
+.title {
+    font-size: 80px !important;
+    display: inline-block;
+    margin-bottom: 30px;
+}
+
+.elm-logo {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    vertical-align: text-bottom;
+    transform: translateY(10px);
+}
+
+img.center {
+    display: block;
+    margin: auto;
+}
+
+.align-left {
+    text-align: left;
+}
+
+.fit-code code,
+.fit-code pre {
+    overflow-y: hidden !important;
+    margin-top: 0px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
+
+.fit-code-bigger code,
+.fit-code-bigger pre {
+    overflow-y: hidden !important;
+    margin-top: 0px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    height: 450px;
+}
