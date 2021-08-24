@@ -12,4 +12,4 @@ Sequel of the [elm-syntax](https://github.com/hrnxm/elm-syntax/) presentation
     yarn install
     yarn make
 
-You can preview `index.html` in your browser to see result.
+You can preview `index.html` in your browser to see the result
