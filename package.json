@@ -1,0 +1,17 @@
+{
+  "name": "elm-architecture",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": {
+    "name": "Harun Muderizovic"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "elm": "^0.19.1-5",
+    "elm-format": "^0.8.5"
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules elm-stuff build yarn.lock yarn-error.log",
+    "make": "elm make src/elm/Main.elm --output=build/elm.js"
+  }
+}
