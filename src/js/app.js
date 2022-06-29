@@ -7,7 +7,7 @@ const app = Elm.Main.init({
     }
 })
 
-const ws = new WebSocket('wss://echo.websocket.org');
+const ws = new WebSocket('wss://ws.postman-echo.com/raw');
 
 // elm -> js
 app.ports.sendMessage.subscribe((message) => {
@@ -16,5 +16,5 @@ app.ports.sendMessage.subscribe((message) => {
 
 ws.onmessage = (message) => {
     // js -> elm
-    app.ports.onMessage.send(message);
+    app.ports.onMessage.send(message.data);
 }
